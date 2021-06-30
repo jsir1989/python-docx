@@ -201,11 +201,16 @@ class CT_PPr(BaseOxmlElement):
         spacing = self.spacing
         if spacing is None:
             return None
+        if spacing.afterLines is not None:
+            return spacing.afterLines
         return spacing.after
 
     @spacing_after.setter
     def spacing_after(self, value):
         if value is None and self.spacing is None:
+            return
+        if self.spacing.afterLines is not None:
+            self.get_or_add_spacing().afterLines = value
             return
         self.get_or_add_spacing().after = value
 
@@ -217,11 +222,20 @@ class CT_PPr(BaseOxmlElement):
         spacing = self.spacing
         if spacing is None:
             return None
+        self.spacing.beforeAutospacing = None
+        self.spacing.afterAutospacing = None
+        if spacing.beforeLines is not None:
+            return spacing.beforeLines
         return spacing.before
 
     @spacing_before.setter
     def spacing_before(self, value):
         if value is None and self.spacing is None:
+            return
+        self.spacing.beforeAutospacing = None
+        self.spacing.afterAutospacing = None
+        if self.spacing.beforeLines is not None:
+            self.get_or_add_spacing().beforeLines = value
             return
         self.get_or_add_spacing().before = value
 
@@ -315,6 +329,10 @@ class CT_Spacing(BaseOxmlElement):
     before = OptionalAttribute('w:before', ST_TwipsMeasure)
     line = OptionalAttribute('w:line', ST_SignedTwipsMeasure)
     lineRule = OptionalAttribute('w:lineRule', WD_LINE_SPACING)
+    afterLines = OptionalAttribute('w:afterLines', ST_TwipsMeasure)
+    beforeLines = OptionalAttribute('w:beforeLines', ST_TwipsMeasure)
+    beforeAutospacing = OptionalAttribute('w:beforeAutospacing', ST_TwipsMeasure)
+    afterAutospacing = OptionalAttribute('w:afterAutospacing', ST_TwipsMeasure)
 
 
 class CT_TabStop(BaseOxmlElement):
